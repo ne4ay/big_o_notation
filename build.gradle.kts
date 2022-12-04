@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("idea")
     id("org.jetbrains.intellij") version "1.7.0"
 }
 
@@ -15,8 +16,10 @@ repositories {
 intellij {
     version.set("2021.3")
     type.set("IC") // Target IDE Platform
-
-    plugins.set(listOf(/* Plugin Dependencies */))
+    plugins.set(listOf(
+        "com.intellij.java"
+    ))
+    instrumentCode.set(true)
 }
 
 tasks {
