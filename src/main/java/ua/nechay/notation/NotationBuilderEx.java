@@ -3,7 +3,6 @@ package ua.nechay.notation;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.folding.FoldingBuilderEx;
 import com.intellij.lang.folding.FoldingDescriptor;
-import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.editor.Document;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiCodeBlock;
@@ -13,7 +12,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,15 +21,19 @@ import java.util.stream.Stream;
  * @since 04.12.2022
  */
 public class NotationBuilderEx extends FoldingBuilderEx {
+    private static final String JAVA_NAME = "JAVA";
+    public NotationBuilderEx() {
+    }
+
     @Override
     public FoldingDescriptor @NotNull [] buildFoldRegions(@NotNull PsiElement root, @NotNull Document document, boolean quick) {
-        if (!root.getLanguage().is(JavaLanguage.INSTANCE)) {
+        if (!JAVA_NAME.equalsIgnoreCase(root.getLanguage().getID())) {
             return new FoldingDescriptor[0];
         }
         if (!PsiTreeUtil.hasErrorElements(root)) {
             return new FoldingDescriptor[0];
         }
-        findChildren(root, PsiClass.class)
+        List<PsiCodeBlock> blocks = findChildren(root, PsiClass.class)
             .flatMap(psiClass -> findChildren(psiClass, PsiMethod.class))
             .flatMap(psiMethod -> findChildren(psiMethod, PsiCodeBlock.class))
             .collect(Collectors.toList());
@@ -43,7 +46,7 @@ public class NotationBuilderEx extends FoldingBuilderEx {
 
     @Override
     public @Nullable String getPlaceholderText(@NotNull ASTNode node) {
-        return null;
+        return "...";
     }
 
     @Override
