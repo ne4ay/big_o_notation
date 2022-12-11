@@ -12,8 +12,9 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -30,16 +31,19 @@ public class NotationBuilderEx extends FoldingBuilderEx {
         if (!JAVA_NAME.equalsIgnoreCase(root.getLanguage().getID())) {
             return new FoldingDescriptor[0];
         }
-        if (!PsiTreeUtil.hasErrorElements(root)) {
+        if (PsiTreeUtil.hasErrorElements(root)) {
             return new FoldingDescriptor[0];
         }
         List<PsiCodeBlock> blocks = findChildren(root, PsiClass.class)
-            .flatMap(psiClass -> findChildren(psiClass, PsiMethod.class))
-            .flatMap(psiMethod -> findChildren(psiMethod, PsiCodeBlock.class))
-            .collect(Collectors.toList());
+                .map(PsiClass::getAllMethods)
+                .flatMap(Arrays::stream)
+                .map(PsiMethod::getBody)
+                .filter(Objects::nonNull)
+                .toList();
         return new FoldingDescriptor[0];
     }
 
+    @NotNull
     private <T extends PsiElement> Stream<T> findChildren(@NotNull PsiElement element, @NotNull Class<T> type) {
         return PsiTreeUtil.findChildrenOfType(element, type).stream();
     }

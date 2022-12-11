@@ -1,9 +1,11 @@
 package ua.nechay.notation;
 
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.StubBasedPsiElement;
-import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.lang.folding.FoldingDescriptor;
+import com.intellij.psi.PsiCodeBlock;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author anechaev
@@ -13,11 +15,12 @@ public final class NotationUtils {
 
     private NotationUtils() {}
 
-    public static boolean hasErrors(@NotNull PsiElement element) {
-        if (element instanceof StubBasedPsiElement<?>) {
-            var stub = (StubBasedPsiElement<?>) element;
-            return stub.getStub() == null && PsiTreeUtil.hasErrorElements(element);
+    @NotNull
+    private Collection<FoldingDescriptor> handleBlock(@NotNull PsiCodeBlock codeBlock) {
+        Map<String, >
+        for (var statement : codeBlock.getChildren()) {
+
         }
-        return PsiTreeUtil.hasErrorElements(element);
+        return Collections.emptyList();
     }
 }
