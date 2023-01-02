@@ -1,7 +1,5 @@
-package ua.nechay.notation.folding;
+package ua.nechay.notation;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.lang.folding.FoldingDescriptor;
 import com.intellij.psi.PsiCodeBlock;
 import com.intellij.psi.PsiDeclarationStatement;
 import com.intellij.psi.PsiElement;
@@ -12,9 +10,7 @@ import com.intellij.psi.PsiMethodCallExpression;
 import com.intellij.psi.PsiNewExpression;
 import com.intellij.psi.PsiReferenceExpression;
 import org.jetbrains.annotations.NotNull;
-import ua.nechay.notation.Utils;
 import ua.nechay.notation.domain.NotationDataStructure;
-import ua.nechay.notation.domain.NotationMethod;
 import ua.nechay.notation.utils.NotationMethodCallInfo;
 import ua.nechay.notation.utils.Pair;
 
@@ -30,14 +26,11 @@ import static ua.nechay.notation.NotationUtils.extractClassRef;
 
 /**
  * @author anechaev
- * @since 18.12.2022
+ * @since 30.12.2022
  */
-public final class NotationFoldingUtils {
-//TODO; abstract collector
-    private NotationFoldingUtils() {}
-
+public abstract class AbstractNotationElementsCollector<T> {
     @NotNull
-    public static Collection<FoldingDescriptor> handleBlock(@NotNull PsiCodeBlock codeBlock) {
+    public Collection<T> handleBlock(@NotNull PsiCodeBlock codeBlock) {
         Map<String, NotationDataStructure> varToDataStructure = new HashMap<>();
         return Arrays.stream(codeBlock.getChildren())
             .map(statement -> handleStatement(statement, varToDataStructure))
@@ -46,7 +39,7 @@ public final class NotationFoldingUtils {
     }
 
     @NotNull
-    private static List<FoldingDescriptor> handleStatement(
+    private List<T> handleStatement(
         @NotNull PsiElement element,
         @NotNull Map<String, NotationDataStructure> varAccumulator)
     {
@@ -58,7 +51,7 @@ public final class NotationFoldingUtils {
         return Collections.emptyList();
     }
 
-    private static List<FoldingDescriptor> handleExpression(
+    private List<T> handleExpression(
         @NotNull PsiExpressionStatement expression,
         @NotNull Map<String, NotationDataStructure> varAccumulator)
     {
@@ -73,7 +66,7 @@ public final class NotationFoldingUtils {
     }
 
     @NotNull
-    private static Optional<FoldingDescriptor> determineDescriptorForMethodCall(
+    private Optional<T> determineDescriptorForMethodCall(
         @NotNull Pair<PsiMethodCallExpression, List<PsiElement>> callWithChildren,
         @NotNull Map<String, NotationDataStructure> varAccumulator)
     {
@@ -82,7 +75,7 @@ public final class NotationFoldingUtils {
             .filter(elem -> elem instanceof PsiReferenceExpression)
             .findFirst()
             .map(elem -> (PsiReferenceExpression) elem)
-            .flatMap(NotationFoldingUtils::determineMethodCallInfo));
+            .flatMap(AbstractNotationElementsCollector::determineMethodCallInfo));
         if (callInfo.getSecond().isEmpty()) {
             return Optional.empty();
         }
@@ -92,28 +85,10 @@ public final class NotationFoldingUtils {
     }
 
     @NotNull
-    private static Optional<FoldingDescriptor> merge(
+    protected abstract Optional<T> merge(
         @NotNull PsiMethodCallExpression callExpressionElem,
         @NotNull NotationMethodCallInfo callInfo,
-        @NotNull Map<String, NotationDataStructure> varAccumulator)
-    {
-        NotationDataStructure dataStructure = varAccumulator.get(callInfo.variableName());
-        if (dataStructure == null) {
-            return Optional.empty();
-        }
-        List<NotationMethod> methods = dataStructure.getMethods().get(callInfo.methodName());
-        if (methods == null || methods.isEmpty()) {
-            return Optional.empty();
-        }
-        //TODO: distinguish by args
-        NotationMethod method = methods.iterator().next();
-        String placeholderText = method.getComplexity().getPrintableName();
-        if (callExpressionElem instanceof ASTNode astNode) {
-            return Optional.of(new FoldingDescriptor(astNode, callExpressionElem.getTextRange(),
-                null, placeholderText));
-        }
-        return Optional.empty();
-    }
+        @NotNull Map<String, NotationDataStructure> varAccumulator);
 
     @NotNull
     private static Optional<NotationMethodCallInfo> determineMethodCallInfo(
@@ -137,7 +112,7 @@ public final class NotationFoldingUtils {
 
 
     @NotNull
-    private static List<FoldingDescriptor> handleDeclaration(
+    private List<T> handleDeclaration(
         @NotNull PsiDeclarationStatement declarationStatement,
         @NotNull Map<String, NotationDataStructure> varToDataStructure)
     {
@@ -149,7 +124,7 @@ public final class NotationFoldingUtils {
     }
 
     @NotNull
-    private static Optional<FoldingDescriptor> handleDeclaredElement(
+    private Optional<T> handleDeclaredElement(
         @NotNull PsiElement element,
         @NotNull Map<String, NotationDataStructure> varToDataStructure)
     {
@@ -160,7 +135,7 @@ public final class NotationFoldingUtils {
     }
 
     @NotNull
-    private static Optional<FoldingDescriptor> handleLocalVariable(
+    private Optional<T> handleLocalVariable(
         @NotNull PsiLocalVariable localVariable,
         @NotNull Map<String, NotationDataStructure> varToDataStructure)
     {

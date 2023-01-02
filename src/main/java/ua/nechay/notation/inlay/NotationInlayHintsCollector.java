@@ -3,6 +3,7 @@ package ua.nechay.notation.inlay;
 import com.intellij.codeInsight.hints.InlayHintsCollector;
 import com.intellij.codeInsight.hints.InlayHintsSink;
 import com.intellij.codeInsight.hints.presentation.InlayTextMetricsStorage;
+import com.intellij.codeInsight.hints.presentation.PresentationFactory;
 import com.intellij.codeInsight.hints.presentation.TextInlayPresentation;
 import com.intellij.lang.folding.FoldingDescriptor;
 import com.intellij.openapi.editor.Editor;
@@ -14,10 +15,13 @@ import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import ua.nechay.notation.NotationUtils;
+import ua.nechay.notation.presentation.NotationInlayHintPresentation;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 
+import static com.intellij.codeInsight.hints.InlayHintsUtilsKt.addCodeVisionElement;
 import static com.intellij.util.ObjectUtils.tryCast;
 import static ua.nechay.notation.NotationUtils.JAVA_NAME;
 
@@ -32,23 +36,31 @@ public class NotationInlayHintsCollector implements InlayHintsCollector {
     @Override
     public boolean collect(@NotNull PsiElement element, @NotNull Editor editor, @NotNull InlayHintsSink inlayHintsSink) {
         PsiJavaFile root = tryCast(element.getContainingFile(), PsiJavaFile.class);
-        if (root == null) return false;
+        if (root == null) return true;
         if (!JAVA_NAME.equalsIgnoreCase(root.getLanguage().getID())) {
           return false;
         }
         if (PsiTreeUtil.hasErrorElements(root)) {
-            return false;
+            return true;
         }
         if (!(editor instanceof EditorImpl)) {
             return false;
         }
+        PresentationFactory factory = new PresentationFactory((EditorImpl)editor);
         NotationUtils.findChildren(root, PsiClass.class)
             .map(foundClass -> foundClass.getAllMethods())
             .flatMap(Arrays::stream)
             .map(method -> method.getBody())
             .filter(Objects::nonNull)
-            .map();
-        return true;
+            .map(new NotationInlayElementsCollector()::handleBlock)
+            .flatMap(Collection::stream)
+            .map(info -> NotationInlayHintPresentation.fromHintInfo(factory, info))
+            .forEach(presentation -> addHint(inlayHintsSink, presentation));
+        return false;
+    }
+
+    private void addHint(InlayHintsSink inlayHintsSink, NotationInlayHintPresentation presentation) {
+        inlayHintsSink.addInlineElement(presentation.getOffset(), true, presentation, false);
     }
 
     private InlayTextMetricsStorage getTextMetricStorage(EditorImpl editor) {

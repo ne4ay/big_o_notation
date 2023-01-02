@@ -39,7 +39,7 @@ public class NotationBuilderEx extends FoldingBuilderEx {
             .flatMap(Arrays::stream)
             .map(method -> method.getBody())
             .filter(Objects::nonNull)
-            .map(NotationFoldingUtils::handleBlock)
+            .map(new NotationFoldingElementsCollector()::handleBlock)
             .flatMap(Collection::stream)
             .toList()
             .toArray(new FoldingDescriptor[0]);
