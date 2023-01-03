@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "ua.nechay"
-version = "1.0-SNAPSHOT"
+version = "0.1"
 
 repositories {
     mavenCentral()
@@ -40,6 +40,6 @@ tasks {
     }
 
     publishPlugin {
-        token.set(System.getenv("PUBLISH_TOKEN"))
+        token.set(System.getenv("NOTATION_PUBLISH_TOKEN"))
     }
 }
