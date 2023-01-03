@@ -4,8 +4,6 @@ import com.intellij.codeInsight.hints.InlayHintsCollector;
 import com.intellij.codeInsight.hints.InlayHintsSink;
 import com.intellij.codeInsight.hints.presentation.InlayTextMetricsStorage;
 import com.intellij.codeInsight.hints.presentation.PresentationFactory;
-import com.intellij.codeInsight.hints.presentation.TextInlayPresentation;
-import com.intellij.lang.folding.FoldingDescriptor;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.impl.EditorImpl;
 import com.intellij.openapi.util.Key;
@@ -14,16 +12,15 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
-import ua.nechay.notation.NotationUtils;
+import ua.nechay.notation.utils.NotationUtils;
 import ua.nechay.notation.presentation.NotationInlayHintPresentation;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 
-import static com.intellij.codeInsight.hints.InlayHintsUtilsKt.addCodeVisionElement;
 import static com.intellij.util.ObjectUtils.tryCast;
-import static ua.nechay.notation.NotationUtils.JAVA_NAME;
+import static ua.nechay.notation.utils.NotationUtils.JAVA_NAME;
 
 /**
  * @author anechaev

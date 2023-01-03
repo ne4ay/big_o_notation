@@ -1,4 +1,4 @@
-package ua.nechay.notation.utils;
+package ua.nechay.notation.domain.auxiliary;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

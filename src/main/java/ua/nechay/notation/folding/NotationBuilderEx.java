@@ -9,14 +9,13 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ua.nechay.notation.NotationUtils;
+import ua.nechay.notation.utils.NotationUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
-import java.util.stream.Stream;
 
-import static ua.nechay.notation.NotationUtils.JAVA_NAME;
+import static ua.nechay.notation.utils.NotationUtils.JAVA_NAME;
 
 /**
  * @author anechaev

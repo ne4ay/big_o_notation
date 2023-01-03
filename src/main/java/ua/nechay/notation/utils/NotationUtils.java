@@ -1,4 +1,4 @@
-package ua.nechay.notation;
+package ua.nechay.notation.utils;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiIdentifier;

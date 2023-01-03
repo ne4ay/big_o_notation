@@ -11,8 +11,9 @@ import com.intellij.psi.PsiNewExpression;
 import com.intellij.psi.PsiReferenceExpression;
 import org.jetbrains.annotations.NotNull;
 import ua.nechay.notation.domain.NotationDataStructure;
-import ua.nechay.notation.utils.NotationMethodCallInfo;
-import ua.nechay.notation.utils.Pair;
+import ua.nechay.notation.domain.auxiliary.NotationMethodCallInfo;
+import ua.nechay.notation.domain.auxiliary.Pair;
+import ua.nechay.notation.utils.Utils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static ua.nechay.notation.NotationUtils.extractClassRef;
+import static ua.nechay.notation.utils.NotationUtils.extractClassRef;
 
 /**
  * @author anechaev

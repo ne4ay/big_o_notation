@@ -3,11 +3,10 @@ package ua.nechay.notation.presentation;
 import com.intellij.codeInsight.hints.presentation.InlayPresentation;
 import com.intellij.codeInsight.hints.presentation.PresentationFactory;
 import com.intellij.codeInsight.hints.presentation.PresentationListener;
-import com.intellij.openapi.editor.Inlay;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.psi.PsiMethodCallExpression;
 import org.jetbrains.annotations.NotNull;
-import ua.nechay.notation.domain.NotationHintInfo;
+import ua.nechay.notation.domain.auxiliary.NotationHintInfo;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;

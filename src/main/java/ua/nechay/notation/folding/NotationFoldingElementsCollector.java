@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import ua.nechay.notation.AbstractNotationElementsCollector;
 import ua.nechay.notation.domain.NotationDataStructure;
 import ua.nechay.notation.domain.NotationMethod;
-import ua.nechay.notation.utils.NotationMethodCallInfo;
+import ua.nechay.notation.domain.auxiliary.NotationMethodCallInfo;
 
 import java.util.List;
 import java.util.Map;

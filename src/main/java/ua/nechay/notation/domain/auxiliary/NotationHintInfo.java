@@ -1,7 +1,8 @@
-package ua.nechay.notation.domain;
+package ua.nechay.notation.domain.auxiliary;
 
 import com.intellij.psi.PsiMethodCallExpression;
 import org.jetbrains.annotations.NotNull;
+import ua.nechay.notation.domain.NotationMethod;
 
 import java.util.Objects;
 
