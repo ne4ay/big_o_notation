@@ -10,6 +10,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static ua.nechay.notation.domain.NotationCollectionMethod.ADD;
+import static ua.nechay.notation.domain.NotationCollectionMethod.CONTAINS;
+import static ua.nechay.notation.domain.NotationCollectionMethod.GET;
+import static ua.nechay.notation.domain.NotationCollectionMethod.REMOVE;
+import static ua.nechay.notation.domain.NotationComplexity.CONSTANT;
+import static ua.nechay.notation.domain.NotationComplexity.LINEAR;
 
 /**
  * @author anechaev
@@ -17,7 +22,22 @@ import static ua.nechay.notation.domain.NotationCollectionMethod.ADD;
  */
 public enum NotationDataStructure {
     ARRAY_LIST(
-        NotationMethod.from(ADD, NotationComplexity.CONSTANT)
+        NotationMethod.from(ADD, CONSTANT),
+        NotationMethod.from(GET, CONSTANT),
+        NotationMethod.from(REMOVE, LINEAR),
+        NotationMethod.from(CONTAINS, LINEAR)
+    ),
+    LINKED_LIST(
+        NotationMethod.from(ADD, CONSTANT),
+        NotationMethod.from(GET, LINEAR),
+        NotationMethod.from(REMOVE, CONSTANT),
+        NotationMethod.from(CONTAINS, LINEAR)
+    ),
+    COPY_ON_WRITE_ARRAY_LIST(
+        NotationMethod.from(ADD, LINEAR),
+        NotationMethod.from(GET, CONSTANT),
+        NotationMethod.from(REMOVE, LINEAR),
+        NotationMethod.from(CONTAINS, LINEAR)
     )
     ;
 
@@ -36,7 +56,9 @@ public enum NotationDataStructure {
     }
 
     private static final Map<String, NotationDataStructure> structures = Map.ofEntries(
-        Map.entry("ArrayList", ARRAY_LIST)
+        Map.entry("ArrayList", ARRAY_LIST),
+        Map.entry("LinkedList", LINKED_LIST),
+        Map.entry("CopyOnWriteArrayList", COPY_ON_WRITE_ARRAY_LIST)
     );
 
     @NotNull

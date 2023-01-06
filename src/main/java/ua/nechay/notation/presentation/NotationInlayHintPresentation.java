@@ -29,11 +29,13 @@ public class NotationInlayHintPresentation implements InlayPresentation {
     @NotNull
     public static NotationInlayHintPresentation fromHintInfo(@NotNull PresentationFactory factory, @NotNull NotationHintInfo hintInfo) {
         //TODO: add args instead of n or k
-        InlayPresentation presentation = factory.text(hintInfo.getMethod().getComplexity().getPrintableName());
         PsiMethodCallExpression callExpression = hintInfo.getCallExpressionElem();
+        var textPresentation = factory.text(hintInfo.getMethod().getComplexity().getPrintableName());
+        var psiRefPresentation = factory.psiSingleReference(textPresentation, () -> callExpression);
+        var roundedPresentation = factory.roundWithBackground(psiRefPresentation);
         int offset = callExpression.getTextOffset();
         int length = callExpression.getText().length();
-        return new NotationInlayHintPresentation(presentation, offset + length);
+        return new NotationInlayHintPresentation(roundedPresentation, offset + length);
     }
 
     public int getOffset() {
