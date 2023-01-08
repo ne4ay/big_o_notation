@@ -1,1 +1,1 @@
-rootProject.name = "notation"
+rootProject.name = "Notation"
