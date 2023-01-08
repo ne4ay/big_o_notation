@@ -9,12 +9,14 @@ import com.intellij.psi.PsiLocalVariable;
 import com.intellij.psi.PsiMethodCallExpression;
 import com.intellij.psi.PsiNewExpression;
 import com.intellij.psi.PsiReferenceExpression;
+import com.intellij.psi.PsiStatement;
 import org.jetbrains.annotations.NotNull;
 import ua.nechay.notation.domain.NotationDataStructure;
 import ua.nechay.notation.domain.auxiliary.NotationMethodCallInfo;
 import ua.nechay.notation.domain.auxiliary.Pair;
 import ua.nechay.notation.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,22 +50,31 @@ public abstract class AbstractNotationElementsCollector<T> {
             return handleDeclaration(declaration, varAccumulator);
         } else if (element instanceof PsiExpressionStatement expression) {
             return handleExpression(expression, varAccumulator);
+        } else  if (element instanceof PsiStatement statement) {
+            return handleExpression(statement, varAccumulator);
         }
         return Collections.emptyList();
     }
 
     private List<T> handleExpression(
-        @NotNull PsiExpressionStatement expression,
+        @NotNull PsiElement expression,
         @NotNull Map<String, NotationDataStructure> varAccumulator)
     {
         return Arrays.stream(expression.getChildren())
             .filter(child -> child instanceof PsiMethodCallExpression)
             .map(child -> (PsiMethodCallExpression) child)
-            .map(callExpr -> Pair.of(callExpr, List.of(callExpr.getChildren())))
-            .map(callWithChildren -> determineDescriptorForMethodCall(callWithChildren, varAccumulator))
+            .map(callExpr -> handleMethodCallExpression(callExpr, varAccumulator))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .toList();
+    }
+
+    private Optional<T> handleMethodCallExpression(
+        @NotNull PsiMethodCallExpression callExpr,
+        @NotNull Map<String, NotationDataStructure> varAccumulator)
+    {
+        Pair<PsiMethodCallExpression, List<PsiElement>> callWithChildren = Pair.of(callExpr, List.of(callExpr.getChildren()));
+        return determineDescriptorForMethodCall(callWithChildren, varAccumulator);
     }
 
     @NotNull
@@ -119,29 +130,30 @@ public abstract class AbstractNotationElementsCollector<T> {
     {
         return Arrays.stream(declarationStatement.getDeclaredElements())
             .map(element -> handleDeclaredElement(element, varToDataStructure))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
+            .flatMap(List::stream)
             .toList();
     }
 
     @NotNull
-    private Optional<T> handleDeclaredElement(
+    private List<T> handleDeclaredElement(
         @NotNull PsiElement element,
         @NotNull Map<String, NotationDataStructure> varToDataStructure)
     {
+        List<T> determined = new ArrayList<>();
         if (element instanceof PsiLocalVariable localVariable) {
-            return handleLocalVariable(localVariable, varToDataStructure);
+            determined.addAll(handleLocalVariable(localVariable, varToDataStructure));
         }
-        return Optional.empty();
+        return determined;
     }
 
     @NotNull
-    private Optional<T> handleLocalVariable(
+    private List<T> handleLocalVariable(
         @NotNull PsiLocalVariable localVariable,
         @NotNull Map<String, NotationDataStructure> varToDataStructure)
     {
         PsiIdentifier variableIdentifier = null;
         NotationDataStructure dataStructureRef = null;
+        List<T> result = new ArrayList<>();
         for (var child : localVariable.getChildren()) {
             if (child instanceof PsiIdentifier identifier) {
                 variableIdentifier = identifier;
@@ -150,12 +162,14 @@ public abstract class AbstractNotationElementsCollector<T> {
                     .map(PsiIdentifier::getText)
                     .map(NotationDataStructure::fromName)
                     .orElse(null);
-            }
-            if (variableIdentifier != null && dataStructureRef != null) { //just for optimization
-                varToDataStructure.put(variableIdentifier.getText(), dataStructureRef);
-                return Optional.empty();
+            } else if (child instanceof PsiMethodCallExpression callExpression) {
+                handleMethodCallExpression(callExpression, varToDataStructure)
+                    .ifPresent(result::add);
             }
         }
-        return Optional.empty();
+        if (variableIdentifier != null && dataStructureRef != null) {
+            varToDataStructure.put(variableIdentifier.getText(), dataStructureRef);
+        }
+        return result;
     }
 }

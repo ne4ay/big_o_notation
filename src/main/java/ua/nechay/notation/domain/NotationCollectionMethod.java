@@ -17,6 +17,8 @@ public enum NotationCollectionMethod {
     REMOVE_ALL("removeAll"),
     CONTAINS("contains"),
     CONTAINS_ALL("containsAll"),
+    SET("set"),
+    SORT("sort")
     ;
 
     private final String printableName;
