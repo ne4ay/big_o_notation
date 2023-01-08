@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,6 +18,7 @@ import static ua.nechay.notation.domain.NotationCollectionMethod.SET;
 import static ua.nechay.notation.domain.NotationCollectionMethod.SORT;
 import static ua.nechay.notation.domain.NotationComplexity.CONSTANT;
 import static ua.nechay.notation.domain.NotationComplexity.LINEAR;
+import static ua.nechay.notation.domain.NotationComplexity.LOG_N;
 import static ua.nechay.notation.domain.NotationComplexity.N_LOG_N;
 
 /**
@@ -52,6 +54,21 @@ public enum NotationDataStructure {
         NotationMethod.from(ADD, CONSTANT),
         NotationMethod.from(REMOVE, CONSTANT),
         NotationMethod.from(CONTAINS, CONSTANT)
+    ),
+    LINKED_HASH_SET(
+        NotationMethod.from(ADD, CONSTANT),
+        NotationMethod.from(REMOVE, CONSTANT),
+        NotationMethod.from(CONTAINS, CONSTANT)
+    ),
+    ENUM_SET(
+        NotationMethod.from(ADD, CONSTANT),
+        NotationMethod.from(REMOVE, CONSTANT),
+        NotationMethod.from(CONTAINS, CONSTANT)
+    ),
+    TREE_SET(
+        NotationMethod.from(ADD, LOG_N),
+        NotationMethod.from(REMOVE, LOG_N),
+        NotationMethod.from(CONTAINS, LOG_N)
     )
     ;
 
@@ -73,7 +90,9 @@ public enum NotationDataStructure {
         Map.entry("ArrayList", ARRAY_LIST),
         Map.entry("LinkedList", LINKED_LIST),
         Map.entry("CopyOnWriteArrayList", COPY_ON_WRITE_ARRAY_LIST),
-        Map.entry("HashSet", HASH_SET)
+        Map.entry("HashSet", HASH_SET),
+        Map.entry("LinkedHashSet", LINKED_HASH_SET),
+        Map.entry("EnumSet", ENUM_SET)
     );
 
     @NotNull
